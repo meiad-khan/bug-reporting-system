@@ -1,15 +1,13 @@
 import type { Request, Response } from "express";
 import authService from "./auth.service";
 import { signToken } from "../../utils/jwt";
+import { sendResponse } from "../../utils/sendResponse";
+
 
 export const createUser = async (req: Request, res: Response) => {
   try {
     const user = await authService.createUserIntoDB(req.body);
-    res.status(201).json({
-      success: true,
-      message: "User registered successfully",
-      data:user
-    });
+    sendResponse(res, { message: "User registered successfully",data:user },201);
   } catch (error:any) {
     res.status(500).json({
       success: false,
@@ -26,18 +24,19 @@ export const loginUser = async (req: Request, res: Response) => {
         success: false,
         message:"Invalid password or email"
       })
+      return sendResponse(res, { message: "Invalid password or email" }, 404);
     }
     const { accesToken:token } = signToken(user);
-    res.status(200).json({
-      success: true,
-      message: "Login successful",
-      data: {
+    sendResponse(res, {
+      message: "Login successful", data: {
         token,
         user
-      }
-    });
+    }})
    
-  } catch (error) {
-    console.log(error);
+  } catch (error:any) {
+    res.status(500).json({
+      success: false,
+      message:error.message
+    })
   }
 }
