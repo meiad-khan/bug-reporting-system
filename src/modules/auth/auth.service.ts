@@ -12,6 +12,20 @@ class AuthService{
       `, [name, email, hashedPassword, role]);
     return res.rows[0];
   }
+
+  async validateUserFromDB(payload: { email: string, password: string }) {
+    const {email, password:givenPassword } = payload;
+    const res = await pool.query(`
+     SELECT * FROM users WHERE email=$1 
+      `, [email]);
+    if (res.rowCount === 0) {
+      return null;
+    }
+    const { password, ...user } = res.rows[0];
+    const isMatch = await bcrypt.compare(givenPassword, password);
+    return isMatch ? user : null;
+
+  }
 }
 
 export default new AuthService();
