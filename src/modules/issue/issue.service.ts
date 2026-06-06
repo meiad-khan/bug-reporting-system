@@ -66,6 +66,36 @@ class IssueService{
 
     return issueFormat;
   }
+
+  async getSingleIssueFromDB(id: number) {
+    const res = await pool.query(`
+      SELECT * FROM issues WHERE id=$1
+      `, [id]);
+    const issue = res.rows[0];
+    if (!issue) {
+      return null;
+    }
+    const result = await pool.query(`
+      SELECT id, name, role FROM users 
+      WHERE id=$1
+      `, [issue?.reporter_id]);
+    const reporter = result.rows[0];
+    // console.log(result.rows[0]);
+    return {
+      id: issue.id,
+      title: issue.title,
+      description: issue.description,
+      type: issue.type,
+      status: issue.status,
+      reporter: {
+        id: reporter?.id,
+        name: reporter?.name,
+        role: reporter?.role,
+      },
+      created_at: issue.created_at,
+      updated_at: issue.updated_at,
+    };
+  }
 }
 
 export default new IssueService();
