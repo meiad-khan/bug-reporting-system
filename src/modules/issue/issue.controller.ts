@@ -6,10 +6,11 @@ export const createIssue = async (req: Request, res: Response) => {
   try {
     const issue = await issueService.createIssue(req.body, req.user.id);
     if (!issue) {
-      res.status(401).json({
-        success: false,
-        message:"Invalid token"
-      })
+       sendResponse(
+         res,
+         { message: "Invalid token", error: true, errors: "Your token is not valid" },
+         401,
+       );
     }
     res.status(201).json({
       success: true,
@@ -17,10 +18,11 @@ export const createIssue = async (req: Request, res: Response) => {
       data: issue
     })
   } catch (error:any) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    sendResponse(
+      res,
+      { message: "Something went wrong", error: true, errors: error },
+      500,
+    );
   }
 }
 
@@ -36,10 +38,11 @@ export const getAllIssues = async (req: Request, res: Response) => {
       200,
     );
   } catch (error:any) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+     sendResponse(
+       res,
+       { message: "Something went wrong", error: true, errors: error },
+       500,
+     );
   }
 }
 
@@ -49,13 +52,47 @@ export const getSingleIssue = async (req: Request, res: Response) => {
     const issueId = Number(id);
     const issue = await issueService.getSingleIssueFromDB(issueId);
     if (!issue) {
-      return sendResponse(res, { message: "Issue not found" }, 404);
+      return sendResponse(
+        res,
+        {
+          message: "Issue not found",
+          error: true,
+          errors: "No issue exists with this ID",
+        },
+        404,
+      );
     }
     sendResponse(res, { message: "Issue retrieved successfully", data: issue });
   } catch (error:any) {
-     res.status(500).json({
-       success: false,
-       message: error.message,
-     });
+      sendResponse(
+        res,
+        { message: "Something went wrong", error: true, errors: error },
+        500,
+      );
   }
 } 
+
+export const updateIssue = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const paramId = Number(id);
+    const updatedIssue = await issueService.modifyIssue(
+      req.body,
+      paramId,
+    );
+    if (!updatedIssue) {
+      sendResponse(
+        res,
+        {
+          message: "Issue not found",
+          error: true,
+          errors: "No issue exists with this ID",
+        },
+        404,
+      );
+    }
+    sendResponse(res, { message: "Issue updated successfully", data:updatedIssue });
+  } catch (error:any) {
+    sendResponse(res, { message: "Something went wrong", error: true, errors: error }, 500);
+  }
+}

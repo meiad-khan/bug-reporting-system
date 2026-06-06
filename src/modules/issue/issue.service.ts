@@ -1,6 +1,7 @@
 import { title } from "node:process";
 import { pool } from "../../db";
 import type { IIssue } from "./issue.interface";
+import type { IUser } from "../auth/auth.interface";
 
 class IssueService{
   async createIssue(payload: IIssue, rep_id: number) {
@@ -95,6 +96,31 @@ class IssueService{
       created_at: issue.created_at,
       updated_at: issue.updated_at,
     };
+  }
+
+  async modifyIssue( payload: IIssue, id: number) {
+    
+
+    const result = await pool.query(`
+      SELECT * FROM issues WHERE id=$1
+      `, [id]);
+    const issue = result.rows[0];
+      const { title, description, type } = payload;
+      const res = await pool.query(
+        `
+      UPDATE issues
+      SET title =COALESCE($1,title),
+      description=COALESCE($2, description),
+      type=COALESCE($3, type)
+      WHERE id=$4 RETURNING *
+      `,
+        [title, description, type, id],
+      );
+      if (res.rowCount === 0) {
+        return null;
+      }
+      return res.rows[0];
+    
   }
 }
 

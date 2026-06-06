@@ -2,12 +2,13 @@ import type { Response } from "express";
 
 export function sendResponse<T>(
   res: Response,
-  { message, data, error }: { message: unknown; data?: T; error?: boolean },
+  { message, data, error, errors }: { message: unknown; data?: T; error?: boolean, errors?:unknown },
   status = 200,
 ) {
   res.status(status).json({
     success: error ? false : true,
     message: message,
     data: error ? undefined : data,
+    errors:error? errors:undefined,
   });
 }

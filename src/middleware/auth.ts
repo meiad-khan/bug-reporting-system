@@ -10,15 +10,33 @@ export const auth = (...roles : Role[]) => {
     try {
       const token = req.headers.authorization;
       if (!token) {
-        return sendResponse(res,{message:"Token isn't found",error:true},401)
+        return sendResponse(
+          res,
+          {
+            message: "Token isn't found",
+            error: true,
+            errors: "Authorization token is missing in request headers",
+          },
+          401,
+        );
       }
       const decoded = jwt.verify(
         token as string,
         config.jwt_secret as string,
       ) as JwtPayload & { id: number } & IUser;
 
+      
+
       if (!roles.includes(decoded?.role)) {
-        return sendResponse(res, { message: "Forbidden - you don't have permission", error: true }, 401);
+        return sendResponse(
+          res,
+          {
+            message: "Forbidden - you don't have permission",
+            error: true,
+            errors: "User role is not allowed to access this resource",
+          },
+          401,
+        );
       }      
       req.user = decoded;
       next();
@@ -29,6 +47,7 @@ export const auth = (...roles : Role[]) => {
           {
             message: "Invalid token",
             error: true,
+            errors: "JWT signature is invalid or token is malformed",
           },
           401,
         );
@@ -40,6 +59,7 @@ export const auth = (...roles : Role[]) => {
           {
             message: "Token expired",
             error: true,
+            errors: "JWT token has expired, please login again",
           },
           401,
         );

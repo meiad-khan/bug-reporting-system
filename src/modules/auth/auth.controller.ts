@@ -9,10 +9,11 @@ export const createUser = async (req: Request, res: Response) => {
     const user = await authService.createUserIntoDB(req.body);
     sendResponse(res, { message: "User registered successfully",data:user },201);
   } catch (error:any) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    })
+     sendResponse(
+       res,
+       { message: "Something went wrong", error: true, errors: error },
+       500,
+     );
   }
 }
 
@@ -20,13 +21,10 @@ export const loginUser = async (req: Request, res: Response) => {
   try {
     const user = await authService.validateUserFromDB(req.body);
     if (!user) {
-      res.status(404).json({
-        success: false,
-        message:"Invalid password or email"
-      })
-      return sendResponse(res, { message: "Invalid password or email" }, 404);
+      return sendResponse(res, { message: "Wrong password or email",error:true,errors:"Invalid credential" }, 404);
     }
-    const { accesToken:token } = signToken(user);
+    const { id, name, role } = user;
+    const { accesToken:token } = signToken({id, name, role});
     sendResponse(res, {
       message: "Login successful", data: {
         token,
@@ -34,9 +32,10 @@ export const loginUser = async (req: Request, res: Response) => {
     }})
    
   } catch (error:any) {
-    res.status(500).json({
-      success: false,
-      message:error.message
-    })
+     sendResponse(
+       res,
+       { message: "Something went wrong", error: true, errors: error },
+       500,
+     );
   }
 }
