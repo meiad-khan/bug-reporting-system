@@ -7,11 +7,18 @@ import { sendResponse } from "../../utils/sendResponse";
 export const createUser = async (req: Request, res: Response) => {
   try {
     const user = await authService.createUserIntoDB(req.body);
-    sendResponse(res, { message: "User registered successfully",data:user },201);
+    sendResponse(res,
+      {
+        message: "User registered successfully", data: user
+      },
+      201
+    );
   } catch (error:any) {
      sendResponse(
        res,
-       { message: "Something went wrong", error: true, errors: error },
+       {
+         message: "Something went wrong", error: true, errors: error
+       },
        500,
      );
   }
