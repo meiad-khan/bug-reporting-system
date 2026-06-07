@@ -24,8 +24,7 @@ export const auth = (...roles : Role[]) => {
         token as string,
         config.jwt_secret as string,
       ) as JwtPayload & { id: number } & IUser;
-
-      
+     
 
       if (!roles.includes(decoded?.role)) {
         return sendResponse(

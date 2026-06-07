@@ -96,3 +96,21 @@ export const updateIssue = async (req: Request, res: Response) => {
     sendResponse(res, { message: "Something went wrong", error: true, errors: error }, 500);
   }
 }
+
+export const deleteIssue = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const paramId = Number(id);
+    const result = await issueService.deleteIssueFromDB(paramId);
+    if (!result) {
+      return sendResponse(res, { message: "Issue not found", error: true, errors: "No issue exists with this ID" }, 404);
+    }
+    sendResponse(res, { message: "Issue deleted successfully" });
+  } catch (error:any) {
+    sendResponse(
+      res,
+      { message: "Something went wrong", error: true, errors: error },
+      500,
+    );
+  }
+}

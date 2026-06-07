@@ -122,6 +122,14 @@ class IssueService{
       return res.rows[0];
     
   }
+
+  async deleteIssueFromDB(id: number) {
+    const res = await pool.query(`
+      DELETE FROM issues
+      WHERE id=$1 RETURNING *
+      `, [id]);
+    return res.rowCount ? true : false;
+  }
 }
 
 export default new IssueService();
