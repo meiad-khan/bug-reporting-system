@@ -11,13 +11,13 @@ This project allows contributors and maintainers to manage software issues and f
 ## Backend Live URL
 
 ```txt
-https://your-project.vercel.app
+https://bug-reporting-system-nine.vercel.app/
 ```
 
 ## GitHub Repository
 
 ```txt
-https://github.com/your-username/devpulse-api
+https://github.com/meiad-khan/bug-reporting-system
 ```
 
 ---
@@ -79,7 +79,7 @@ src/
 ## 1. Clone Repository
 
 ```bash
-git clone https://github.com/your-username/devpulse-api.git
+git clone https://github.com/meiad-khan/bug-reporting-system
 ```
 
 ---
